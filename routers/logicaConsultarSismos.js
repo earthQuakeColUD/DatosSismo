@@ -49,7 +49,6 @@ async function callearthquakeUSGS() {
                 console.log(err)
             }
             else {
-                console.log("exitoso")
                 return json["q:quakeml"]["eventParameters"];
             }
         })
@@ -67,7 +66,6 @@ function sismosColombia(sismos) {
         if (eventos.description.text.toUpperCase().includes("COLOMBIA")) {
             var JsonFormat = {
                 descripcion: eventos.description.text,
-                //tipoMovimento: eventos.type,
                 tipoMovimento: "movimientos teluricos",
                 fecha: eventos.magnitude.creationInfo.creationTime,
                 longitud: eventos.origin.longitude.value,
@@ -81,22 +79,10 @@ function sismosColombia(sismos) {
 }
 
 
-async function obtenerUltimoSismo() {
-    try {
-        var todosSismos = await callearthquakeUSGS();
-        var sismosColombianos = await sismosColombia(todosSismos);
-        var sismosColombianosOrganizados = await organizarSismosFecha(sismosColombianos)
-        return ({ respuesta: sismosColombianosOrganizados[0] });
-    } catch (e) {
-        return ("error" + e)
-    }
-}
 
 async function obtenerUltimoSismoDB() {
     try {
         var ultimoSismo = await basedDatos.lastEarthquake();
-        console.log("ultimo sismo logica");
-        console.log(ultimoSismo);
         return ({ respuesta: ultimoSismo });
     } catch (e) {
         return ("error" + e)
@@ -126,10 +112,6 @@ async function actualizacion() {
     var sismosColombianos = await sismosColombia(todosSismos);
     var sismosCO = await organizarSismosFecha(sismosColombianos)
     var sismosDB = await basedDatos.lastEarthquake();
-    console.log("sismosDB")
-    console.log(sismosDB)
-    console.log("sismosCO[0]")
-    console.log(sismosCO[0])
     if (sismosDB[0].descripcion != sismosCO[0].descripcion ||
         sismosDB[0].longitud != sismosCO[0].longitud ||
         sismosDB[0].latitud != sismosCO[0].latitud ||
@@ -147,7 +129,6 @@ async function actualizacion() {
                 url: "http://localhost:9999/allUser"
             }
             var { data } = await axios(peticionUsuarios);
-            console.log(data)
             if (data.usuarios.length > 0) {
                 for (var info of data.usuarios) {
                     usuario.push(`${info.token}`);
@@ -173,11 +154,6 @@ async function actualizacion() {
                             latitud: `${sismosCO[0].latitud}`,
                             magnitud: `${sismosCO[0].magnitud}`
                         }
-                        // android: {
-                        //     priority: "high",
-                        //     sound: 'alert.mp3',
-                        //     channelId: 'fcm_default_channel'
-                        // }
                     },
                     headers: {
                         Authorization: "key=AAAApXvAQL4:APA91bFuvgP_jQHng1wLKTdFy4CqEtdIOmw_7SSDQKYCg4YXYXnj9n-hTQgmRcCgXeWEbW4gS1IaU26KGoBn0ZMG7RTQLsWRLejDTQZ8pGxw-obfiCVyhIYTmJgdIBKkFkHw1KsgJd1I"
